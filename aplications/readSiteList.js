@@ -20,14 +20,12 @@ async function processLineByLine(fileToRead, sitesNames) {
 
         axios.get(`https://${line}/`, { timeout: 5000 }).then(res => {
             var siteData = res.data
-            var ecommercePlatform = marketValidation.marketValidation(siteData, sitesNames)
-            createCsv.writeFile(line, ecommercePlatform)
 
-            /*console.log(line)
-            console.log(`statusCode: ${res.status}`)
-            // chamando a função pra ver se a plataforma tem o market place da lista
-            console.log(ecommercePlatform)
-            console.log('\n') */
+            // aqui eu chamo a função que valida se a plataforma de ecommerce é conhecida e se for retorna qual plataforma que é
+            var ecommercePlatform = marketValidation.marketValidation(siteData, sitesNames)
+
+            // chamando a função para escrever um arquivo .csv, por enquanto só estamos passando a URL do site e a plataforma do ecommerce
+            createCsv.writeFile(line, ecommercePlatform)
 
         }).catch(error => {
             return error
