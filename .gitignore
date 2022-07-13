@@ -1,0 +1,6 @@
+site_list
+node_modules
+package-lock.json
+package.json
+teste.js
+.gitattributes
