@@ -3,35 +3,53 @@ const readline = require('readline');
 const axios = require('axios');
 const { error } = require('console');
 var marketValidation = require('./marketValidation')
-var createCsv = require('./createCsv')
+var createCsv = require('./writeCsv');
+const { resolve } = require('path');
 
-async function processLineByLine(fileToRead, sitesNames) {
-    var fileStream = fs.createReadStream(fileToRead);
-    var rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
-
-    // código para fazer request individual de cada site
-    for await (const line of rl) {
-
-        // utilizando o metodo get do axios para pegar as informações de cada site
-        // timeout de 10 segundos, caso demore mais de 10 segundos para abrir um site ele pula pro proximos
-
-        axios.get(`https://${line}/`, { timeout: 5000 }).then(res => {
-            var siteData = res.data
-
-            // aqui eu chamo a função que valida se a plataforma de ecommerce é conhecida e se for retorna qual plataforma que é
-            var ecommercePlatform = marketValidation.marketValidation(siteData, sitesNames)
-
-            // chamando a função para escrever um arquivo .csv, por enquanto só estamos passando a URL do site e a plataforma do ecommerce
-            createCsv.writeFile(line, ecommercePlatform)
-
-        }).catch(error => {
-            return error
-        })
-
-    }
+function wait(ms){
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms)
+    })
 }
 
-module.exports = { processLineByLine }
+    async function processLineByLine(fileToRead, sitesNames) {
+        var fileStream = fs.createReadStream(fileToRead);
+        var rl = readline.createInterface({
+            input: fileStream,
+            crlfDelay: Infinity
+        });
+        // código para fazer request individual de cada site
+        for await (const line of rl) {
+    
+            // utilizando o metodo get do axios para pegar as informações de cada site
+            axios.get(`https://${line}/`).then(res => {
+    
+              var siteData = res.data
+              var ecommercePlatform = marketValidation.whichPlatform(siteData, sitesNames)
+              var isEbit = marketValidation.isEbit(siteData)
+              var isReclameAqui = marketValidation.isReclameAqui(siteData)
+              createCsv.writeFile(line, ecommercePlatform, isEbit, isReclameAqui)
+  
+  
+          }).catch(error => {
+              if (error.response) {
+                return;
+                // Request made and server responded
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+              } else if (error.request) {
+                return;
+                // The request was made but no response was received
+                console.log(error.request);
+              } else {
+                return;
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+              }
+          
+            })
+        }
+    }
+    module.exports = { processLineByLine }
+

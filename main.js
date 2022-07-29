@@ -2,7 +2,7 @@ const fs = require('fs')
 var readFiles = require('./aplications/readSiteList')
 
 
-const dir = './site_test'
+const dir = './site_list'
 const files = fs.readdirSync(dir)
 const sitesNames = []
 
@@ -17,5 +17,5 @@ sitesNames.shift()
 // forEach para passar de arquivo por arquivo dentro da pasta site_list
 files.forEach((data) => {
     //dentro de cada arquivo vamos chamar a função para ler linha por linha
-    readFiles.processLineByLine(`./site_test/${data}`,sitesNames)
+    readFiles.processLineByLine(`./site_list/${data}`,sitesNames)
 })

@@ -1,7 +1,7 @@
-function marketValidation(siteData,sitesNames) {
+function whichPlatform(siteData, sitesNames) {
     var marketPlatform
-    sitesNames.forEach((data)=>{
-        if(siteData.includes(data)){
+    sitesNames.forEach((data) => {
+        if (siteData.includes(data)) {
             marketPlatform = data
         }
     })
@@ -9,4 +9,18 @@ function marketValidation(siteData,sitesNames) {
     return marketPlatform
 }
 
-module.exports = { marketValidation }
+function isEbit(siteData) {
+    if (siteData.includes('seloEbit')) {
+        return "Sim"
+    }
+    return 'Não'
+}
+
+function isReclameAqui(siteData) {
+    if (siteData.includes('Selo Reclame Aqui')) {
+        return "Sim"
+    }
+    return 'Não'
+}
+
+module.exports = { whichPlatform, isEbit, isReclameAqui }
